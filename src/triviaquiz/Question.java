@@ -5,7 +5,6 @@
  */
 package triviaquiz;
 import java.io.Serializable;
-import java.util.*;
 
 /**
  *
