@@ -14,8 +14,6 @@ import java.io.*;
  */
 public class TriviaQuiz {
 
-    
-        
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
