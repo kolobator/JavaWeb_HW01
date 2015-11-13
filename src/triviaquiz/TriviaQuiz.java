@@ -13,7 +13,47 @@ import java.io.*;
  * @author Boaz
  */
 public class TriviaQuiz {
+     
+    public static boolean welcome(){
+        
+        int password = 1234;
+        boolean isAdmin = false;
+    
+        Scanner s = new Scanner(System.in);
+        int input;
+        
+        System.out.println("\nWelcome to TriviaQuiz !");
+        input = -1;
+        while (input < 0 || input > 3) {            
+            
+            System.out.println("Are you a player or an administrator? Enter one of the options:\n1 - Player\n2 - Administrator\n0 - Exit TriviaQuiz");
+            input=s.nextInt();
+        
+            switch(input){
+                case 0 : 
+                    System.out.println("Bye!");
+                    System.exit(input);
+                    break;
+                case 1 : isAdmin = false;
+                    break;
+                case 2 :
+                    System.out.println("\nPlease enter 4 digit administrator password:");
+                    int pass = s.nextInt();
+                    if (pass==password) {
+                        isAdmin = true;
+                    }
+                    break;
+                default :
+                    System.out.println("\n[!] Error: bad input!");
+                    break;
+            }
+        }
+        
+        return isAdmin;
+    }
+    
 
+    
     /**
      * @param args the command line arguments
      * @throws java.io.IOException
@@ -22,12 +62,9 @@ public class TriviaQuiz {
     public static void main(String[] args) throws IOException, ClassNotFoundException{
         // TODO code application logic here
         
-        ArrayList<Question> questions = new ArrayList<Question>();
-        
-        Scanner s=new Scanner(System.in);
-        int input;
-        User user = new User();
-        
+        HashMap<String, ArrayList<Question>> questions  = new HashMap<String, ArrayList<Question>>();
+        User user;
+                
         String path = ".\\Trivia.qa";
         File f = new File(path);
         if (!f.exists()) {
@@ -36,85 +73,22 @@ public class TriviaQuiz {
         else if(f.length()!=0){
             FileInputStream fin = new FileInputStream(path);
             ObjectInputStream oin = new ObjectInputStream(fin);
-            questions = (ArrayList<Question>)oin.readObject();
+            questions = (HashMap<String, ArrayList<Question>>)oin.readObject();
         }
         
-        
-        System.out.print("Welcome\n");
-        System.out.print("Are you a player or an administrator?\nEnter 1 for player or 2 for administrator\n");
-        input=s.nextInt();
-        
-        if(input==1){
-            // start game console
-        }
-        else if(input==2){
-            System.out.println("\nPlease enter 4 digit administrator password:");
-            // check password length
-            int password=s.nextInt();
-            user = new User(password);
-        }
-        else{
-            System.out.println("\nError: bad input! Exiting the game.");
-            System.exit(-1);
-        }
-        
-        
-        if (user.type.equals("admin")) {
-            // start admin console
-            AdminConsole ac = new AdminConsole();
+        // Main loop to make sure we exit game only if user enters 0
+        while (true) {            
+                
+            boolean isAdmin = welcome();
             
-            System.out.println("\nWelcome to Administrator Console!\n\nEnter one of the options:");
-            System.out.println("1 - Add a question\n2 - Delete a question\n3 - Show questions\n");
-            
-            input = s.nextInt();
-            
-            switch(input){
-                case 1 :                     
-                    while (input==1) {                        
-                        ac.addQuestion(questions);
-                        System.out.println("Add another question? 1 - yes, 2 - no");
-                        input = s.nextInt();
-                    }
-                    System.out.println("Save the questions list?  1 - yes, 2 - no");
-                    input = s.nextInt();
-                    if (input==1) {
-                        FileOutputStream fout = new FileOutputStream(path);
-                        ObjectOutputStream oout =  new ObjectOutputStream(fout);
-                        oout.writeObject(questions);
-                        oout.close();
-                    }
-                    break;
-                case 2 : 
-                    input=1;
-                    while(input==1){
-                        if(!questions.isEmpty()){
-                       
-                            ac.showQuestions(questions);
-                            System.out.println("Enter question number you'd like to delete:");
-                            input = s.nextInt();
-                            ac.deleteQuestions(questions, input);
-                            ac.showQuestions(questions);
-                            System.out.println("Delete another question? 1 - yes, 2 - no");
-                            input = s.nextInt();
-                        }
-                        else System.out.println("The list is empty");
-                    }
-                    System.out.println("Save to file? 1 - yes, 2 - no");
-                    input = s.nextInt();
-                    if (input==1) {
-                        FileOutputStream fout = new FileOutputStream(path);
-                        ObjectOutputStream oout =  new ObjectOutputStream(fout);
-                        oout.writeObject(questions);
-                        oout.close();
-                    }
-                    break;
-                case 3 : 
-                    if(!questions.isEmpty()){
-                        ac.showQuestions(questions);
-                    }
-                    else System.out.println("The list is empty");
-                    break;
+            if (isAdmin){
+                user = new AdminConsole(questions, path);
+            }else{
+                user  = new PlayerConsole(questions);
             }
-        }   
-    } 
+            
+        }
+        
+
+    }
 }
