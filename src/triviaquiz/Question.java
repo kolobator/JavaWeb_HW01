@@ -18,4 +18,5 @@ public abstract class Question implements Serializable{
     
     int level;                     // 1-easy 2-medium 3-hard
     String category;               // questions categorey: Sport, history ....
+
 }
