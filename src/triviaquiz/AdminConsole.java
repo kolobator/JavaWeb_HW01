@@ -4,15 +4,97 @@
  * and open the template in the editor.
  */
 package triviaquiz;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.*;
 
 /**
  *
  * @author Boaz
  */
-public class AdminConsole {
+public class AdminConsole extends User{
+
+    Scanner s = new Scanner(System.in);
+    int input;    
     
-    public void addQuestion(ArrayList<Question> qlist){
+    public AdminConsole(HashMap<String, ArrayList<Question>> questions, String path) throws FileNotFoundException, IOException {
+        
+        System.out.println("\nWelcome to Administrator Console!");
+
+        input = 0;
+        while(input!=4){
+            
+            System.out.println("\n\nEnter one of the options:\n1 - Add a question\n2 - Delete a question\n3 - Show questions\n4 - Exit");
+            input = s.nextInt();
+            
+            switch(input){
+                        case 1 :
+                            
+                            while (input==1) {
+                                addQuestion(questions);
+                                
+                                System.out.println("\nAdd another question? 1 - yes, 2 - no");
+                                input = s.nextInt();
+                            }
+                            
+                            System.out.println("\nSave the questions list?  1 - yes, 2 - no");
+                            input = s.nextInt();
+                            
+                            if (input==1) {
+                                FileOutputStream fout = new FileOutputStream(path);
+                                ObjectOutputStream oout =  new ObjectOutputStream(fout);
+                                oout.writeObject(questions);
+                                oout.close();
+                            }
+                            break;
+                        case 2 :
+                            
+                            input=1;
+                            while(input==1){
+                                if(!questions.isEmpty()){
+                                    showQuestions(questions);
+                                    
+                                    System.out.println("\nEnter question number you'd like to delete:");
+                                    input = s.nextInt();
+                                    
+                                    deleteQuestions(questions, input);
+                                    showQuestions(questions);
+                                    
+                                    System.out.println("\nDelete another question? 1 - yes, 2 - no");
+                                    input = s.nextInt();
+                                }
+                                else {
+                                    System.out.println("\nThe list is empty");
+                                    input = -1;
+                                }
+                            }
+
+                            System.out.println("\nSave to file? 1 - yes, 2 - no");
+                            input = s.nextInt();
+                            
+                            if (input==1) {
+                                FileOutputStream fout = new FileOutputStream(path);
+                                ObjectOutputStream oout =  new ObjectOutputStream(fout);
+                                oout.writeObject(questions);
+                                oout.close();
+                            }
+                            break;
+                        case 3 :
+                            
+                            if(!questions.isEmpty()){
+                                showQuestions(questions);
+                            }
+                            else System.out.println("\nThe list is empty");
+                            break;
+                    }
+        }
+    
+    }
+    
+    
+    private void addQuestion(HashMap<String, ArrayList<Question>> qlist){
         
         Scanner s = new Scanner(System.in);
         Question q = null;
@@ -22,14 +104,13 @@ public class AdminConsole {
         ArrayList<String> ans_options = new ArrayList<>();
         
         int numInput;
-        int ind = qlist.size() + 1;
         
         // Ask user for question's type
-        System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question\n");
+        System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question");
         numInput = s.nextInt();
         while (numInput <= 0 || numInput > 3) {
-            System.out.println("Error: wrong input!");
-            System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question\n");
+            System.out.println("[!] Error: wrong input!");
+            System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question");
             numInput = s.nextInt();
         }
         switch(numInput){
@@ -42,7 +123,7 @@ public class AdminConsole {
         }
         
         // Ask user for question's level
-        System.out.println("Enter question's level:\n1 - easy\n2 - medium\n3 - hard\n");
+        System.out.println("\nEnter question's level:\n1 - easy\n2 - medium\n3 - hard");
         numInput = s.nextInt();
         switch(numInput){
             case 1 : level = 1;
@@ -53,55 +134,59 @@ public class AdminConsole {
         }
         
         // Ask user for question's category
-        System.out.println("Type the question's category e.g. history/sport/politics...\n");
+        System.out.println("\nType the question's category e.g. history/sport/politics...");
         s.nextLine();
         category = s.nextLine();
         
         // Ask user to enter the question and answer(s)
-        System.out.println("Type in your question:\n");
+        System.out.println("\nType in your question:");
         question = s.nextLine();        
         switch (type) {
             case "open":
-                System.out.println("Type in the correct answer:");
+                System.out.println("\nType in the correct answer:");
                 answer = s.nextLine();
                 break;
             case "multi":
                 boolean finished =false;
                 int i=2;
                 String option;
-                System.out.println("Add answer option "+1+":");
+                System.out.println("\nAdd answer option "+1+":");
                 option =  s.nextLine();                
                 ans_options.add(option);
                 while(!finished){
-                    System.out.println("Do you want to add another answer option? y/n");
+                    System.out.println("\nDo you want to add another answer option? y/n");
                     option =  s.nextLine();
                     switch (option) {
                         case "n":
                             finished=true;
                             break;
                         case "y":
-                            System.out.println("Option number "+i+":");
+                            System.out.println("\nOption number "+i+":");
                             option =  s.nextLine();
                             ans_options.add(option);
                             i++;
                             break;
                         default:
-                            System.out.println("Wrong input");
+                            System.out.println("\n[!] Error: wrong input");
                             break;
                     }
                 }
-                System.out.println("Enter the correct answer:");
+                System.out.println("\nEnter the correct answer:");
                 answer = s.nextLine();
                 break;
             case "yesno":
-                System.out.println("Enter \"Yes\" or \"No\" for correct answer:\n");
+                System.out.println("\nEnter \"Yes\" or \"No\" for correct answer:");
                 answer = s.nextLine();
                 ans_options.add("Yes");
                 ans_options.add("No");
                 break;
         }
         
-        id = ind;   // set the id for new question
+        if (!qlist.containsKey(category)) {
+            qlist.put(category, new ArrayList<Question>());
+        }
+        
+        id = qlist.get(category).size() + 1;   // set the id for new question       
         
         // Finally, create the questions according to chosen type
         switch(type){
@@ -115,29 +200,54 @@ public class AdminConsole {
                 q = new YesNoQuestion(id, level, category, question, answer, ans_options);
         }
         
-        qlist.add(q);
-    }
-    
-    
-    public void showQuestions(ArrayList<Question> qlist){
-        for (Question q : qlist) {
-            System.out.println(q.id+" - "+q.question);
+        
+        if (qlist.containsKey(category)) {
+            qlist.get(category).add(q);
+        }else{
+            qlist.put(category, new ArrayList<Question>());
+            qlist.get(category).add(q);
         }
+        
     }
     
     
-    public void deleteQuestions(ArrayList<Question> qlist, int i){
-        for (int j = 0; j < qlist.size(); j++) {
-            if(qlist.get(j).id==i){
-                qlist.remove(j);
+    private void showQuestions(HashMap<String, ArrayList<Question>> qlist){
+        System.out.println("");     // print empty line
+        
+        for (String key : qlist.keySet()) {
+            System.out.println("> Category: "+key);
+            for (Question q : qlist.get(key)) {
+                System.out.println(q.id+" - "+q.question);
+            }
+        }
+
+    }
+    
+    
+    private void deleteQuestions(HashMap<String, ArrayList<Question>> qlist, int i){
+        
+        for (Map.Entry<String, ArrayList<Question>> entrySet : qlist.entrySet()) {
+            String key = entrySet.getKey();
+            ArrayList<Question> value = entrySet.getValue();
+            for (Question question : value) {
+                if (question.id==i) {
+                    qlist.get(key).remove(question);
+                }
             }
         }
         
-        // set new ids
-        int id = 1;
-        for (Question q : qlist) {
-            q.id = id++;
+        
+        for (Map.Entry<String, ArrayList<Question>> entrySet : qlist.entrySet()) {
+            String key = entrySet.getKey();
+            ArrayList<Question> value = entrySet.getValue();
+            // set new ids
+            int id = 1;
+            for (Question q : value) {
+                q.id = id++;
+            }
         }
+        
+
     }
     
 }
