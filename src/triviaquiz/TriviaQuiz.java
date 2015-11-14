@@ -8,6 +8,7 @@ package triviaquiz;
 import java.util.Scanner;
 import java.util.*;
 import java.io.*;
+import java.nio.file.FileVisitResult;
 /**
  *
  * @author Boaz
@@ -20,33 +21,49 @@ public class TriviaQuiz {
         boolean isAdmin = false;
     
         Scanner s = new Scanner(System.in);
-        int input;
+        String input;
         
         System.out.println("\nWelcome to TriviaQuiz !");
-        input = -1;
-        while (input < 0 || input > 3) {            
+        input = "";
+        while ( !input.matches("[0-2]")) {
             
-            System.out.println("Are you a player or an administrator? Enter one of the options:\n1 - Player\n2 - Administrator\n0 - Exit TriviaQuiz");
-            input=s.nextInt();
+            System.out.println("\nAre you a player or an administrator? Enter one of the options:\n1 - Player\n2 - Administrator\n0 - Exit TriviaQuiz");
+            input=s.nextLine();
+
+        }
         
-            switch(input){
+        switch(Integer.parseInt(input)){
                 case 0 : 
                     System.out.println("Bye!");
-                    System.exit(input);
+                    System.exit(Integer.parseInt(input));
                     break;
                 case 1 : isAdmin = false;
                     break;
                 case 2 :
-                    System.out.println("\nPlease enter 4 digit administrator password:");
-                    int pass = s.nextInt();
-                    if (pass==password) {
-                        isAdmin = true;
+                    input = "";
+                    int pass = 0;
+                    int tries = 0;
+                    while (!input.matches("\\d{4}") && tries !=3) {                        
+                        System.out.println("\nPlease enter 4 digit administrator password:");
+                        input = s.nextLine();
+                        if (input.matches("\\d{4}") && Integer.parseInt(input)==password) {
+                          
+                           if (pass==password) {
+                                isAdmin = true;
+                                break;
+                           }
+                        }
+                        tries++;
                     }
+                    if (input.matches("[0-9]{4}") && tries ==3) {
+                        System.out.println("\n[!] You entered wrong password 3 times. Exiting...");
+                        break;
+                    }
+
                     break;
                 default :
                     System.out.println("\n[!] Error: bad input!");
                     break;
-            }
         }
         
         return isAdmin;
