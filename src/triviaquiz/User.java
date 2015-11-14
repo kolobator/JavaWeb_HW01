@@ -9,7 +9,7 @@ package triviaquiz;
  *
  * @author Boaz
  */
-public class User {
+public abstract class  User {
 
     
 }
