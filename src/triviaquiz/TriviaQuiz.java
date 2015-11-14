@@ -8,7 +8,6 @@ package triviaquiz;
 import java.util.Scanner;
 import java.util.*;
 import java.io.*;
-import java.nio.file.FileVisitResult;
 /**
  *
  * @author Boaz
@@ -79,7 +78,7 @@ public class TriviaQuiz {
     public static void main(String[] args) throws IOException, ClassNotFoundException{
         // TODO code application logic here
         
-        HashMap<String, ArrayList<Question>> questions  = new HashMap<String, ArrayList<Question>>();
+        HashMap<String, ArrayList<Question>> questions  = new HashMap<>();
         User user;
                 
         String path = ".\\Trivia.qa";
