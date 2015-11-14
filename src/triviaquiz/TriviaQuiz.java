@@ -28,41 +28,32 @@ public class TriviaQuiz {
             
             System.out.println("\nAre you a player or an administrator? Enter one of the options:\n1 - Player\n2 - Administrator\n0 - Exit TriviaQuiz");
             input=s.nextLine();
-
-        }
         
-        switch(Integer.parseInt(input)){
-                case 0 : 
-                    System.out.println("Bye!");
-                    System.exit(Integer.parseInt(input));
-                    break;
-                case 1 : isAdmin = false;
-                    break;
-                case 2 :
-                    input = "";
-                    int pass = 0;
-                    int tries = 0;
-                    while (!input.matches("\\d{4}") && tries !=3) {                        
-                        System.out.println("\nPlease enter 4 digit administrator password:");
-                        input = s.nextLine();
-                        if (input.matches("\\d{4}") && Integer.parseInt(input)==password) {
-                          
-                           if (pass==password) {
-                                isAdmin = true;
-                                break;
-                           }
-                        }
-                        tries++;
-                    }
-                    if (input.matches("[0-9]{4}") && tries ==3) {
-                        System.out.println("\n[!] You entered wrong password 3 times. Exiting...");
+            switch(Integer.parseInt(input)){
+                    case 0 : 
+                        System.out.println("Bye!");
+                        System.exit(Integer.parseInt(input));
                         break;
-                    }
-
-                    break;
-                default :
-                    System.out.println("\n[!] Error: bad input!");
-                    break;
+                    case 1 : isAdmin = false;
+                        break;
+                    case 2 :
+                        input = "";
+                        int pass = 0;
+                        int tries = 0;
+                        while (tries !=3) {                        
+                            System.out.println("\nPlease enter 4 digit administrator password:");
+                            input = s.nextLine();
+                            if (input.matches("\\d{4}") && Integer.parseInt(input)==password) {
+                                    isAdmin = true;
+                                    return isAdmin;
+                            }else{
+                                System.out.println("\n[!] You entered wrong password.");
+                            }
+                            tries++;
+                        }
+                        System.out.println("[!] You entered wrong password 3 times. Exiting...");
+                        input = "3";
+            }
         }
         
         return isAdmin;

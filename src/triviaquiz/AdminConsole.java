@@ -17,71 +17,85 @@ import java.util.*;
 public class AdminConsole extends User{
 
     Scanner s = new Scanner(System.in);
-    int input;    
+    String input;    
     
     public AdminConsole(HashMap<String, ArrayList<Question>> questions, String path) throws FileNotFoundException, IOException {
         
         System.out.println("\nWelcome to Administrator Console!");
 
-        input = 0;
-        while(input!=4){
+        input = "0";
+        while((input.matches("\\d") && Integer.parseInt(input)!=4) || (!input.matches("\\d"))) {
             
             System.out.println("\n\nEnter one of the options:\n1 - Add a question\n2 - Delete a question\n3 - Show questions\n4 - Exit");
-            input = s.nextInt();
+            input = s.nextLine();
             
             switch(input){
-                        case 1 :
+                        case "1" :
                             
-                            while (input==1) {
-                                addQuestion(questions);
+                            addQuestion(questions);
+
+                            while (input.equals("1")) {
                                 
                                 System.out.println("\nAdd another question? 1 - yes, 2 - no");
-                                input = s.nextInt();
+                                input = s.nextLine();
+                                
+                                if (input.equals("1")) addQuestion(questions);                              
+                                if (input.equals("2")) break;
+                                if (!input.equals("1") && !input.equals("2")) {
+                                    System.out.println("\n[!] Wrong input.");
+                                    input = "1";
+                                }
                             }
                             
                             System.out.println("\nSave the questions list?  1 - yes, 2 - no");
-                            input = s.nextInt();
+                            input = s.nextLine();
                             
-                            if (input==1) {
+                            while (!input.equals("1") && !input.equals("2")) {                                
+                                System.out.println("\n[!] Wrong input.");
+                                System.out.println("\nSave the questions list?  1 - yes, 2 - no");
+                                input = s.nextLine();
+                            }
+                            
+                            if (Integer.parseInt(input)==1) {
                                 FileOutputStream fout = new FileOutputStream(path);
                                 ObjectOutputStream oout =  new ObjectOutputStream(fout);
                                 oout.writeObject(questions);
                                 oout.close();
                             }
                             break;
-                        case 2 :
+                        case "2" :
                             
-                            input=1;
-                            while(input==1){
+                            input="1";
+                            while(Integer.parseInt(input)==1){
                                 if(!questions.isEmpty()){
                                     showQuestions(questions);
                                     
                                     System.out.println("\nEnter question number you'd like to delete:");
-                                    input = s.nextInt();
+                                    input = s.nextLine();
                                     
-                                    deleteQuestions(questions, input);
+                                    deleteQuestions(questions, Integer.parseInt(input));
                                     showQuestions(questions);
                                     
                                     System.out.println("\nDelete another question? 1 - yes, 2 - no");
-                                    input = s.nextInt();
+                                    input = s.nextLine();
                                 }
                                 else {
                                     System.out.println("\nThe list is empty");
-                                    input = -1;
+                                    input = "-1";
                                 }
                             }
 
                             System.out.println("\nSave to file? 1 - yes, 2 - no");
-                            input = s.nextInt();
+                            input = s.nextLine();
                             
-                            if (input==1) {
+                            if (Integer.parseInt(input)==1) {
                                 FileOutputStream fout = new FileOutputStream(path);
                                 ObjectOutputStream oout =  new ObjectOutputStream(fout);
                                 oout.writeObject(questions);
                                 oout.close();
                             }
                             break;
-                        case 3 :
+                        case "3" :
                             
                             if(!questions.isEmpty()){
                                 showQuestions(questions);
@@ -89,7 +103,10 @@ public class AdminConsole extends User{
                             else System.out.println("\nThe list is empty");
                             break;
                     }
+            
         }
+        
+        
     
     }
     
@@ -103,39 +120,44 @@ public class AdminConsole extends User{
         int level = 0, id;
         ArrayList<String> ans_options = new ArrayList<>();
         
-        int numInput;
+        String input;
         
         // Ask user for question's type
         System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question");
-        numInput = s.nextInt();
-        while (numInput <= 0 || numInput > 3) {
+        input = s.nextLine();
+        
+        while (!input.matches("\\d") ||  (input.matches("\\d") && (Integer.parseInt(input)<1 || Integer.parseInt(input)>3)) ) {
             System.out.println("[!] Error: wrong input!");
             System.out.println("\nPlease choose the question type:\n1 - open question\n2 - multi-choice question\n3 - yes/no question");
-            numInput = s.nextInt();
+            input = s.nextLine();
         }
-        switch(numInput){
-            case 1 : type = "open";
+        switch(input){
+            case "1" : type = "open";
                 break;
-            case 2 : type = "multi";
+            case "2" : type = "multi";
                 break;
-            case 3 : type = "yesno";
+            case "3" : type = "yesno";
                 break;
         }
         
         // Ask user for question's level
-        System.out.println("\nEnter question's level:\n1 - easy\n2 - medium\n3 - hard");
-        numInput = s.nextInt();
-        switch(numInput){
-            case 1 : level = 1;
+        System.out.println("\nEnter question's level:\n1 - Easy\n2 - Medium\n3 - Hard");
+        input = s.nextLine();
+        while (!input.matches("\\d") ||  (input.matches("\\d") && (Integer.parseInt(input)<1 || Integer.parseInt(input)>3)) ) {            
+            System.out.println("[!] Error: wrong input!");
+            System.out.println("\nEnter question's level:\n1 - Easy\n2 - Medium\n3 - Hard");
+        }
+        switch(input){
+            case "1" : level = 1;
                 break;
-            case 2 : level = 2;
+            case "2" : level = 2;
                 break;
-            case 3 : level = 3;
+            case "3" : level = 3;
         }
         
         // Ask user for question's category
         System.out.println("\nType the question's category e.g. history/sport/politics...");
-        s.nextLine();
+        //s.nextLine();
         category = s.nextLine();
         
         // Ask user to enter the question and answer(s)
